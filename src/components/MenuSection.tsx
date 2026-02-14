@@ -1,37 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Leaf, Vegan } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import AnimatedSection from "./AnimatedSection";
 
 const categories = ["Breakfast", "Lunch", "Dinner", "Dessert", "Quick Bites"];
 
 interface MenuItem {
+  id: string;
   name: string;
   description: string;
-  price: string;
-  veg?: boolean;
-  vegan?: boolean;
-  organic?: boolean;
+  price: number;
+  is_vegetarian: boolean;
+  is_vegan: boolean;
+  is_organic: boolean;
   category: string;
 }
 
-const menuItems: MenuItem[] = [
-  { name: "Masala Dosa", description: "Crispy rice crepe with spiced potato filling", price: "₹120", veg: true, category: "Breakfast" },
-  { name: "Poha", description: "Flattened rice with peanuts, curry leaves & lemon", price: "₹80", veg: true, organic: true, category: "Breakfast" },
-  { name: "Idli Sambar", description: "Steamed rice cakes with lentil soup", price: "₹100", veg: true, vegan: true, category: "Breakfast" },
-  { name: "Thali Special", description: "Complete meal with roti, rice, dal, sabzi & dessert", price: "₹250", veg: true, category: "Lunch" },
-  { name: "Paneer Butter Masala", description: "Cottage cheese in rich tomato-cashew gravy", price: "₹220", veg: true, category: "Lunch" },
-  { name: "Veg Biryani", description: "Fragrant basmati rice with seasonal vegetables", price: "₹200", veg: true, category: "Lunch" },
-  { name: "Chole Bhature", description: "Spiced chickpeas with fried bread", price: "₹180", veg: true, category: "Dinner" },
-  { name: "Palak Paneer", description: "Spinach gravy with fresh cottage cheese", price: "₹210", veg: true, category: "Dinner" },
-  { name: "Gulab Jamun", description: "Deep-fried milk dumplings in rose syrup", price: "₹90", veg: true, category: "Dessert" },
-  { name: "Shrikhand", description: "Saffron-flavored strained yogurt dessert", price: "₹110", veg: true, category: "Dessert" },
-  { name: "Samosa", description: "Crispy pastry with spiced potato-pea filling", price: "₹50", veg: true, vegan: true, category: "Quick Bites" },
-  { name: "Vada Pav", description: "Mumbai-style spiced potato burger", price: "₹60", veg: true, category: "Quick Bites" },
-];
-
 const MenuSection = () => {
   const [active, setActive] = useState("Breakfast");
-  const filtered = menuItems.filter((i) => i.category === active);
+  const [items, setItems] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    supabase.from("menu_items").select("*").order("sort_order").then(({ data }) => {
+      if (data) setItems(data as unknown as MenuItem[]);
+    });
+  }, []);
+
+  const filtered = items.filter((i) => i.category === active);
 
   return (
     <section id="menu" className="py-20 md:py-28 bg-card mandala-pattern">
@@ -63,27 +58,27 @@ const MenuSection = () => {
         {/* Menu grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {filtered.map((item, i) => (
-            <AnimatedSection key={item.name} delay={i * 0.1}>
+            <AnimatedSection key={item.id} delay={i * 0.1}>
               <div className="bg-background rounded-lg p-6 border border-border hover:border-primary/30 hover:shadow-lg transition-all group">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
                     {item.name}
                   </h3>
-                  <span className="font-display text-lg font-bold text-primary">{item.price}</span>
+                  <span className="font-display text-lg font-bold text-primary">₹{item.price}</span>
                 </div>
                 <p className="font-body text-sm text-muted-foreground mb-3">{item.description}</p>
                 <div className="flex gap-2">
-                  {item.veg && (
+                  {item.is_vegetarian && (
                     <span className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
                       <Leaf size={12} /> Veg
                     </span>
                   )}
-                  {item.vegan && (
+                  {item.is_vegan && (
                     <span className="flex items-center gap-1 bg-secondary/10 text-secondary text-xs px-2 py-0.5 rounded-full">
                       <Vegan size={12} /> Vegan
                     </span>
                   )}
-                  {item.organic && (
+                  {item.is_organic && (
                     <span className="bg-accent/15 text-accent-foreground text-xs px-2 py-0.5 rounded-full">
                       Organic
                     </span>
