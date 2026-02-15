@@ -10,7 +10,8 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const { signIn, isAdmin, user, loading } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, signUp, isAdmin, user, loading } = useAuth();
   const navigate = useNavigate();
 
   // If already logged in as admin, redirect
@@ -22,13 +23,23 @@ const AdminLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await signIn(email, password);
-    setBusy(false);
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+    if (isSignUp) {
+      const { error } = await signUp(email, password);
+      setBusy(false);
+      if (error) {
+        toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Account created!", description: "You can now sign in." });
+        setIsSignUp(false);
+      }
     } else {
-      // Re-check happens via auth state change — navigate after short delay
-      setTimeout(() => navigate("/admin/dashboard"), 300);
+      const { error } = await signIn(email, password);
+      setBusy(false);
+      if (error) {
+        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+      } else {
+        setTimeout(() => navigate("/admin/dashboard"), 300);
+      }
     }
   };
 
@@ -39,7 +50,7 @@ const AdminLogin = () => {
           <h1 className="font-display text-3xl font-bold text-foreground">
             MODERN<span className="text-accent"> CAFE</span>
           </h1>
-          <p className="font-body text-muted-foreground text-sm mt-2">Admin Login</p>
+          <p className="font-body text-muted-foreground text-sm mt-2">{isSignUp ? "Create Account" : "Admin Login"}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -66,9 +77,19 @@ const AdminLogin = () => {
             />
           </div>
           <Button type="submit" className="w-full font-body" disabled={busy}>
-            {busy ? "Signing in…" : "Sign In"}
+            {busy ? (isSignUp ? "Creating account…" : "Signing in…") : (isSignUp ? "Sign Up" : "Sign In")}
           </Button>
         </form>
+
+        <p className="text-center mt-4">
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="font-body text-sm text-accent hover:text-primary transition-colors"
+          >
+            {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+          </button>
+        </p>
 
         <p className="text-center mt-6">
           <a href="/" className="font-body text-sm text-muted-foreground hover:text-primary transition-colors">
