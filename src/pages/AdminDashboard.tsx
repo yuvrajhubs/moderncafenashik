@@ -313,6 +313,7 @@ const SiteSettingsTab = () => {
   if (loading) return <p className="font-body text-muted-foreground">Loading…</p>;
 
   const hero = settings.hero || {};
+  const menuPage = settings.menu_page || {};
   const about = settings.about || {};
   const contact = settings.contact || {};
 
@@ -329,6 +330,25 @@ const SiteSettingsTab = () => {
           <div>
             <Label className="font-body text-xs">Tagline</Label>
             <Input defaultValue={hero.tagline || ""} onBlur={(e) => saveSetting("hero", { ...hero, tagline: e.target.value })} />
+          </div>
+        </div>
+      </section>
+
+      {/* Menu Page */}
+      <section>
+        <h2 className="font-display text-2xl font-bold text-foreground mb-4">Menu Page</h2>
+        <div className="space-y-3">
+          <div>
+            <Label className="font-body text-xs">Page Title</Label>
+            <Input defaultValue={menuPage.title || ""} placeholder="Our Menu" onBlur={(e) => saveSetting("menu_page", { ...menuPage, title: e.target.value })} />
+          </div>
+          <div>
+            <Label className="font-body text-xs">Subtitle</Label>
+            <Input defaultValue={menuPage.subtitle || ""} placeholder="Modern Cafe Nashik" onBlur={(e) => saveSetting("menu_page", { ...menuPage, subtitle: e.target.value })} />
+          </div>
+          <div>
+            <Label className="font-body text-xs">Description</Label>
+            <Textarea defaultValue={menuPage.description || ""} placeholder="Explore our carefully curated selection..." onBlur={(e) => saveSetting("menu_page", { ...menuPage, description: e.target.value })} />
           </div>
         </div>
       </section>
