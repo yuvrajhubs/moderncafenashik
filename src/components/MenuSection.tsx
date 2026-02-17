@@ -21,7 +21,8 @@ const MenuSection = () => {
   const [items, setItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
-    supabase.from("menu_items").select("*").order("sort_order").then(({ data }) => {
+    supabase.from("menu_items").select("*").order("sort_order").then(({ data, error }) => {
+      console.log("Menu fetch result:", { data, error, count: data?.length });
       if (data) setItems(data as unknown as MenuItem[]);
     });
   }, []);
