@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Leaf, Vegan, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
 const categories = ["Breakfast", "Lunch", "Dinner", "Dessert", "Quick Bites"];
@@ -31,21 +30,37 @@ const MenuPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const loadData = async () => {
       try {
-        const [menuRes, settingsRes] = await Promise.all([
-          supabase.from("menu_items").select("*").order("sort_order"),
-          supabase.from("site_settings").select("*").eq("key", "menu_page").maybeSingle(),
-        ]);
-        if (menuRes.data) setItems(menuRes.data as unknown as MenuItem[]);
-        if (settingsRes.data) setSettings((settingsRes.data.value as unknown as MenuPageSettings) || {});
+        const { data: menuData, error: menuError } = await supabase
+          .from("menu_items")
+          .select("*")
+          .order("sort_order");
+
+        if (menuError) console.error("Menu fetch error:", menuError);
+        if (!cancelled && menuData) {
+          setItems(menuData as unknown as MenuItem[]);
+        }
+
+        const { data: settingsData, error: settingsError } = await supabase
+          .from("site_settings")
+          .select("*")
+          .eq("key", "menu_page")
+          .maybeSingle();
+
+        if (settingsError) console.error("Settings fetch error:", settingsError);
+        if (!cancelled && settingsData) {
+          setSettings((settingsData.value as unknown as MenuPageSettings) || {});
+        }
       } catch (e) {
         console.error("Failed to load menu data:", e);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     loadData();
+    return () => { cancelled = true; };
   }, []);
 
   const filtered = items.filter((i) => i.category === active);
@@ -67,11 +82,7 @@ const MenuPage = () => {
           >
             <ArrowLeft size={16} /> Back to Home
           </Link>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <p className="font-body text-accent text-sm tracking-[0.2em] uppercase mb-3">
               {settings.subtitle || "Modern Cafe Nashik"}
             </p>
@@ -81,7 +92,7 @@ const MenuPage = () => {
             <p className="font-body text-primary-foreground/70 max-w-xl text-lg">
               {settings.description || "Explore our carefully curated selection of dishes, crafted with the freshest ingredients and a love for authentic flavors."}
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -100,7 +111,7 @@ const MenuPage = () => {
                 }`}
               >
                 {name}
-                <span className="ml-1.5 text-xs opacity-70">({count})</span>
+                {!loading && <span className="ml-1.5 text-xs opacity-70">({count})</span>}
               </button>
             ))}
           </div>
@@ -111,85 +122,74 @@ const MenuPage = () => {
       <div className="container mx-auto px-6 py-12">
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <div key={n} className="bg-card rounded-xl p-6 border border-border animate-pulse h-40" />
             ))}
           </div>
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-8">
-                {active}
-                <span className="text-muted-foreground font-body text-base font-normal ml-3">
-                  {filtered.length} {filtered.length === 1 ? "item" : "items"}
-                </span>
-              </h2>
+          <div>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-8">
+              {active}
+              <span className="text-muted-foreground font-body text-base font-normal ml-3">
+                {filtered.length} {filtered.length === 1 ? "item" : "items"}
+              </span>
+            </h2>
 
-              {filtered.length === 0 ? (
-                <p className="font-body text-muted-foreground text-center py-16">
-                  No items in this category yet.
-                </p>
-              ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filtered.map((item, i) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: i * 0.05 }}
-                      className="bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-xl transition-all group overflow-hidden"
-                    >
-                      {item.image_url && (
-                        <div className="aspect-video overflow-hidden">
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                      )}
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-3">
-                          <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                            {item.name}
-                          </h3>
-                          <span className="font-display text-xl font-bold text-primary ml-4 shrink-0">
-                            ₹{item.price}
-                          </span>
-                        </div>
-                        <p className="font-body text-sm text-muted-foreground mb-4 leading-relaxed">
-                          {item.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {item.is_vegetarian && (
-                            <span className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2.5 py-1 rounded-full font-medium">
-                              <Leaf size={12} /> Veg
-                            </span>
-                          )}
-                          {item.is_vegan && (
-                            <span className="flex items-center gap-1 bg-secondary/10 text-secondary text-xs px-2.5 py-1 rounded-full font-medium">
-                              <Vegan size={12} /> Vegan
-                            </span>
-                          )}
-                          {item.is_organic && (
-                            <span className="bg-accent/15 text-accent-foreground text-xs px-2.5 py-1 rounded-full font-medium">
-                              Organic
-                            </span>
-                          )}
-                        </div>
+            {filtered.length === 0 ? (
+              <p className="font-body text-muted-foreground text-center py-16">
+                No items in this category yet.
+              </p>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-xl transition-all group overflow-hidden"
+                  >
+                    {item.image_url && (
+                      <div className="aspect-video overflow-hidden">
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+                    )}
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {item.name}
+                        </h3>
+                        <span className="font-display text-xl font-bold text-primary ml-4 shrink-0">
+                          ₹{item.price}
+                        </span>
+                      </div>
+                      <p className="font-body text-sm text-muted-foreground mb-4 leading-relaxed">
+                        {item.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {item.is_vegetarian && (
+                          <span className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2.5 py-1 rounded-full font-medium">
+                            <Leaf size={12} /> Veg
+                          </span>
+                        )}
+                        {item.is_vegan && (
+                          <span className="flex items-center gap-1 bg-secondary/10 text-secondary text-xs px-2.5 py-1 rounded-full font-medium">
+                            <Vegan size={12} /> Vegan
+                          </span>
+                        )}
+                        {item.is_organic && (
+                          <span className="bg-accent/15 text-accent-foreground text-xs px-2.5 py-1 rounded-full font-medium">
+                            Organic
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
 
