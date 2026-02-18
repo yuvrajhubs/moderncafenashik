@@ -32,13 +32,18 @@ const MenuPage = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const [menuRes, settingsRes] = await Promise.all([
-        supabase.from("menu_items").select("*").order("sort_order"),
-        supabase.from("site_settings").select("*").eq("key", "menu_page").maybeSingle(),
-      ]);
-      if (menuRes.data) setItems(menuRes.data as unknown as MenuItem[]);
-      if (settingsRes.data) setSettings((settingsRes.data.value as unknown as MenuPageSettings) || {});
-      setLoading(false);
+      try {
+        const [menuRes, settingsRes] = await Promise.all([
+          supabase.from("menu_items").select("*").order("sort_order"),
+          supabase.from("site_settings").select("*").eq("key", "menu_page").maybeSingle(),
+        ]);
+        if (menuRes.data) setItems(menuRes.data as unknown as MenuItem[]);
+        if (settingsRes.data) setSettings((settingsRes.data.value as unknown as MenuPageSettings) || {});
+      } catch (e) {
+        console.error("Failed to load menu data:", e);
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, []);
