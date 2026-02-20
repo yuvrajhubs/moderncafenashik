@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "Home", href: "#hero", isRoute: false },
-  { label: "About", href: "#about", isRoute: false },
-  { label: "Menu", href: "/menu", isRoute: true },
-  { label: "Gallery", href: "#gallery", isRoute: false },
-  { label: "Reviews", href: "#testimonials", isRoute: false },
-  { label: "Contact", href: "#contact", isRoute: false },
+  { label: "Home", href: "#hero" },
+  { label: "About", href: "#about" },
+  { label: "Menu", href: "#menu" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Reviews", href: "#testimonials" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const Navbar = () => {
@@ -38,25 +37,15 @@ const Navbar = () => {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) =>
-            link.isRoute ? (
-              <Link
-                key={link.href}
-                to={link.href}
-                className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
-              >
-                {link.label}
-              </Link>
-            ) : (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
-              >
-                {link.label}
-              </a>
-            )
-          )}
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
 
         {/* Mobile toggle */}
@@ -78,27 +67,16 @@ const Navbar = () => {
             className="md:hidden bg-cafe-charcoal/95 backdrop-blur-md"
           >
             <div className="flex flex-col items-center gap-4 py-6">
-              {navLinks.map((link) =>
-                link.isRoute ? (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
-                  >
-                    {link.label}
-                  </a>
-                )
-              )}
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-primary-foreground/80 hover:text-accent transition-colors font-body text-sm tracking-wide uppercase"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
           </motion.div>
         )}

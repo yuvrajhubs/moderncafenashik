@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Leaf, Vegan } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AnimatedSection from "./AnimatedSection";
@@ -89,15 +88,6 @@ const MenuSection = () => {
             </AnimatedSection>
           ))}
         </div>
-
-        <AnimatedSection delay={0.3} className="text-center mt-10">
-          <Link
-            to="/menu"
-            className="inline-block font-body text-sm px-8 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md transition-all font-medium"
-          >
-            View Full Menu →
-          </Link>
-        </AnimatedSection>
       </div>
     </section>
   );
