@@ -29,8 +29,8 @@ const HeroSection = () =>
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-primary-foreground mb-6 leading-tight">THE RENAISSANCE  
-OF MODERN 
+      className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-primary-foreground mb-6 leading-tight">   THE RENAISSANCE   
+OF MODERN  
 CAFE NASHIK
 
 
