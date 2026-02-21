@@ -32,7 +32,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <a href="#hero" className="font-display text-2xl font-bold text-primary-foreground tracking-wider">
-          MODERN<span className="text-accent"> CAFE</span>
+          THE RENAISSANCE<span className="text-accent"> OF MODERN CAFE NASHIK</span>
         </a>
 
         {/* Desktop */}
