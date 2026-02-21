@@ -29,16 +29,16 @@ const HeroSection = () =>
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-primary-foreground mb-6 leading-tight">
+      className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-primary-foreground mb-6 leading-tight">THE RENAISSANCE 
+MODERN
+CAFE NASHIK
 
-        MODERN
-        <span className="block text-accent">CAFE NASHIK
+
+      <span className="block text-accent">CAFE NASHIK
       </span>
       </motion.h1>
 
-      <motion.p initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.4 }}
+      <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}
     className="font-body text-primary-foreground/80 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
 
         A casual nook with patio dining, serving regional Indian fare with a vegetarian focus
