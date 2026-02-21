@@ -65,6 +65,22 @@ const AboutSection = () => (
           </div>
         </AnimatedSection>
       </div>
+
+      {/* Map */}
+      <AnimatedSection delay={0.3}>
+        <div className="mt-16 rounded-lg overflow-hidden shadow-xl">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3749.0214882667706!2d73.76091511039066!3d20.007612821989852!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bddeb9a03f08da5%3A0x1a6579e2db3ae6c6!2sModern%20Cafe%20Nashik!5e0!3m2!1sen!2sin!4v1771672566739!5m2!1sen!2sin"
+            width="100%"
+            height="450"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Modern Cafe Nashik location"
+          />
+        </div>
+      </AnimatedSection>
     </div>
   </section>
 );
